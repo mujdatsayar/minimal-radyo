@@ -157,13 +157,13 @@
       html, body {
         width: 100%;
         height: 100%;
-        height: 100dvh;
+        max-height: 100%;
         min-height: 0;
         overflow: hidden;
         overscroll-behavior: none;
       }
       body {
-        justify-content: stretch;
+        justify-content: flex-start;
         padding: calc(env(safe-area-inset-top, 0px) + 10px) calc(env(safe-area-inset-right, 0px) + 12px) calc(env(safe-area-inset-bottom, 0px) + 10px) calc(env(safe-area-inset-left, 0px) + 12px);
       }
       .app-wrapper,
@@ -172,6 +172,7 @@
         min-height: 0;
         height: 100%;
         max-height: 100%;
+        margin: 0;
         flex-direction: column;
         max-width: 392px;
         gap: 12px;
@@ -221,12 +222,15 @@
 
     @media (max-height: 520px) and (min-width: 640px) {
       html, body {
+        width: 100%;
         height: 100%;
-        height: 100dvh;
+        max-height: 100%;
+        min-height: 0;
         overflow: hidden;
         overscroll-behavior: none;
       }
       body {
+        justify-content: flex-start;
         padding: calc(env(safe-area-inset-top, 0px) + 8px) calc(env(safe-area-inset-right, 0px) + 12px) calc(env(safe-area-inset-bottom, 0px) + 8px) calc(env(safe-area-inset-left, 0px) + 12px);
       }
       .app-wrapper {
@@ -234,6 +238,7 @@
         min-height: 0;
         height: 100%;
         max-height: 100%;
+        margin: 0;
         max-width: 840px;
         flex-direction: row;
         align-items: stretch;
@@ -5096,6 +5101,32 @@
 
       // Play the newly added item!
       playStation(newStation.id, true);
+    });
+
+    // Lock outer viewport scroll on iOS (especially after orientationchange or keyboard dismiss)
+    function resetViewportScroll() {
+      if (window.innerWidth < 640 || window.innerHeight <= 520) {
+        if (window.scrollX !== 0 || window.scrollY !== 0) {
+          window.scrollTo(0, 0);
+        }
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      }
+    }
+
+    window.addEventListener("scroll", resetViewportScroll, { passive: true });
+    window.addEventListener("orientationchange", () => {
+      resetViewportScroll();
+      setTimeout(resetViewportScroll, 80);
+      setTimeout(resetViewportScroll, 280);
+    });
+    window.addEventListener("resize", resetViewportScroll);
+    window.addEventListener("pageshow", resetViewportScroll);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", resetViewportScroll);
+    }
+    document.addEventListener("focusout", () => {
+      setTimeout(resetViewportScroll, 60);
     });
 
     // Prevent outer page rubber-band bounce on iOS while keeping inner lists, buttons & sliders smooth
