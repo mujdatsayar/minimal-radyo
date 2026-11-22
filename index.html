@@ -257,8 +257,10 @@
     .card-top-right-actions {
       display: flex;
       align-items: center;
-      gap: 7px;
+      justify-content: flex-end;
+      gap: 6px;
       position: relative;
+      flex: 1;
       min-width: 0;
     }
 
@@ -423,6 +425,7 @@
     .icon-btn-card {
       width: 32px;
       height: 32px;
+      flex-shrink: 0;
       border-radius: 50%;
       background: var(--util-bg);
       border: 1px solid var(--util-border);
@@ -456,52 +459,72 @@
       justify-content: center;
     }
 
-    /* Search Popover & Input (Matches Settings Popover) */
-    .search-popover {
-      width: 236px;
-      padding: 10px 12px;
-      border-radius: 18px;
-    }
-
-    .search-bar-wrap {
-      position: relative;
+    /* Inline Left-Expanding Search Pill */
+    .search-expand-pill {
       display: flex;
       align-items: center;
-      height: 36px;
-      width: 100%;
-      min-width: 0;
+      height: 32px;
+      width: 32px;
+      flex-shrink: 0;
       border-radius: 999px;
       background: var(--util-bg);
       border: 1px solid var(--util-border);
-      padding: 0 8px 0 11px;
-      gap: 6px;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      color: var(--util-text);
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease, padding 0.28s ease;
     }
 
-    .search-bar-wrap:focus-within,
-    .search-bar-wrap.has-value {
+    .search-expand-pill:not(.open):hover {
+      transform: scale(1.08);
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    .search-expand-pill.has-value,
+    .search-expand-pill.open {
       border-color: var(--primary-color);
       box-shadow: 0 0 0 2px var(--primary-btn-bg);
     }
 
-    .search-icon {
-      width: 15px;
-      height: 15px;
-      flex-shrink: 0;
-      color: var(--text-muted);
-      transition: color 0.2s ease;
-      pointer-events: none;
+    .search-expand-pill.open {
+      width: 150px;
+      padding-right: 6px;
     }
 
-    .search-bar-wrap:focus-within .search-icon,
-    .search-bar-wrap.has-value .search-icon {
+    @media (max-width: 380px) {
+      .search-expand-pill.open {
+        width: 126px;
+      }
+    }
+
+    .search-pill-btn {
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+      border: none;
+      background: transparent;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.2s ease;
+    }
+
+    .search-expand-pill.open .search-pill-btn,
+    .search-expand-pill.has-value .search-pill-btn {
       color: var(--primary-color);
     }
 
     .search-input {
       flex: 1;
       min-width: 0;
-      width: 100%;
+      width: 0;
+      opacity: 0;
+      pointer-events: none;
       border: none;
       outline: none;
       background: transparent;
@@ -512,12 +535,20 @@
       user-select: text;
       -webkit-user-select: text;
       padding: 0;
-      line-height: 1.25;
+      line-height: 1.2;
+      transition: opacity 0.18s ease;
+    }
+
+    .search-expand-pill.open .search-input {
+      width: 100%;
+      opacity: 1;
+      pointer-events: auto;
+      padding-right: 4px;
     }
 
     .search-input::placeholder {
       color: var(--text-muted);
-      font-size: 0.84rem;
+      font-size: 0.78rem;
       opacity: 0.85;
     }
 
@@ -525,8 +556,8 @@
       display: none;
       align-items: center;
       justify-content: center;
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       border: none;
       border-radius: 50%;
       background: rgba(100, 116, 139, 0.18);
@@ -537,7 +568,7 @@
       transition: background 0.15s ease, color 0.15s ease;
     }
 
-    .search-bar-wrap.has-value .search-clear-btn {
+    .search-expand-pill.open.has-value .search-clear-btn {
       display: flex;
     }
 
@@ -1193,29 +1224,21 @@
               </svg>
             </button>
 
-            <!-- Search Toggle Icon (Opens Search Popover) -->
-            <button id="searchToggleBtn" class="icon-btn-card" title="Radyo Ara" aria-label="Radyo Ara">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-            </button>
-
-            <!-- Search Popover -->
-            <div id="searchPopover" class="popover-menu search-popover">
-              <div class="search-bar-wrap" id="searchBarWrap">
-                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <!-- Inline Left-Expanding Search Pill -->
+            <div id="searchExpandPill" class="search-expand-pill">
+              <button type="button" id="searchToggleBtn" class="search-pill-btn" title="Radyo Ara" aria-label="Radyo Ara">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="11" cy="11" r="8"></circle>
                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
-                <input type="text" id="stationSearchInput" class="search-input" placeholder="Radyo ara..." aria-label="Radyo ara" autocomplete="off" spellcheck="false">
-                <button type="button" id="clearSearchBtn" class="search-clear-btn" title="Aramayı Temizle" aria-label="Aramayı Temizle">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                </button>
-              </div>
+              </button>
+              <input type="text" id="stationSearchInput" class="search-input" placeholder="Ara..." aria-label="Radyo ara" autocomplete="off" spellcheck="false" tabindex="-1">
+              <button type="button" id="clearSearchBtn" class="search-clear-btn" title="Aramayı Temizle" aria-label="Aramayı Temizle" tabindex="-1">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
             </div>
 
             <!-- Color Swatches & Hue Slider Popover -->
@@ -3800,8 +3823,7 @@
     const moonIcon = document.getElementById("moonIcon");
     const settingsBtn = document.getElementById("settingsBtn");
     const searchToggleBtn = document.getElementById("searchToggleBtn");
-    const searchPopover = document.getElementById("searchPopover");
-    const searchBarWrap = document.getElementById("searchBarWrap");
+    const searchExpandPill = document.getElementById("searchExpandPill");
     const stationSearchInput = document.getElementById("stationSearchInput");
     const clearSearchBtn = document.getElementById("clearSearchBtn");
     const colorPopover = document.getElementById("colorPopover");
@@ -3990,20 +4012,41 @@
       });
     }
 
-    // Toggle Settings & Search Popovers
+    function openSearchBar() {
+      if (!searchExpandPill) return;
+      colorPopover.classList.remove("open");
+      searchExpandPill.classList.add("open");
+      if (stationSearchInput) {
+        stationSearchInput.removeAttribute("tabindex");
+        stationSearchInput.focus();
+      }
+      if (clearSearchBtn) clearSearchBtn.removeAttribute("tabindex");
+    }
+
+    function closeSearchBar() {
+      if (!searchExpandPill) return;
+      searchExpandPill.classList.remove("open");
+      if (stationSearchInput) {
+        stationSearchInput.setAttribute("tabindex", "-1");
+        stationSearchInput.blur();
+      }
+      if (clearSearchBtn) clearSearchBtn.setAttribute("tabindex", "-1");
+    }
+
+    // Toggle Settings Popover & Inline Expanding Search
     settingsBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      if (searchPopover) searchPopover.classList.remove("open");
+      closeSearchBar();
       colorPopover.classList.toggle("open");
     });
 
-    if (searchToggleBtn && searchPopover) {
+    if (searchToggleBtn && searchExpandPill) {
       searchToggleBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        colorPopover.classList.remove("open");
-        const isOpen = searchPopover.classList.toggle("open");
-        if (isOpen && stationSearchInput) {
-          stationSearchInput.focus();
+        if (searchExpandPill.classList.contains("open")) {
+          closeSearchBar();
+        } else {
+          openSearchBar();
         }
       });
     }
@@ -4012,8 +4055,8 @@
       if (!colorPopover.contains(e.target) && e.target !== settingsBtn) {
         colorPopover.classList.remove("open");
       }
-      if (searchPopover && !searchPopover.contains(e.target) && !searchToggleBtn.contains(e.target)) {
-        searchPopover.classList.remove("open");
+      if (searchExpandPill && !searchExpandPill.contains(e.target)) {
+        closeSearchBar();
       }
     });
 
@@ -4041,7 +4084,7 @@
         cancelAddModalBtn.textContent = currentCountryMode === "TR" ? "İptal" : "Cancel";
       }
       if (stationSearchInput) {
-        stationSearchInput.placeholder = currentCountryMode === "TR" ? "Radyo ara..." : "Search stations...";
+        stationSearchInput.placeholder = currentCountryMode === "TR" ? "Ara..." : "Search...";
         stationSearchInput.setAttribute("aria-label", currentCountryMode === "TR" ? "Radyo ara" : "Search radio stations");
       }
       if (searchToggleBtn) {
@@ -4200,11 +4243,8 @@
     function setStationSearch(val) {
       searchQuery = val || "";
       const hasVal = searchQuery.trim().length > 0;
-      if (searchBarWrap) {
-        searchBarWrap.classList.toggle("has-value", hasVal);
-      }
-      if (searchToggleBtn) {
-        searchToggleBtn.classList.toggle("active", hasVal);
+      if (searchExpandPill) {
+        searchExpandPill.classList.toggle("has-value", hasVal);
       }
       renderPlaylist();
     }
@@ -4227,12 +4267,10 @@
           if (stationSearchInput.value) {
             clearStationSearch(false);
           }
-          if (searchPopover) searchPopover.classList.remove("open");
-          stationSearchInput.blur();
+          closeSearchBar();
         } else if (e.key === "Enter") {
           e.preventDefault();
-          if (searchPopover) searchPopover.classList.remove("open");
-          stationSearchInput.blur();
+          closeSearchBar();
         }
       });
     }
@@ -4817,9 +4855,7 @@
         case "Slash":
           if (stationSearchInput) {
             e.preventDefault();
-            if (colorPopover) colorPopover.classList.remove("open");
-            if (searchPopover) searchPopover.classList.add("open");
-            stationSearchInput.focus();
+            openSearchBar();
             stationSearchInput.select();
           }
           break;
