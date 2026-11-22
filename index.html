@@ -405,34 +405,37 @@
       justify-content: center;
     }
 
-    /* Minimal Search Bar next to Color Theme Button */
+    /* Search Popover & Input (Matches Settings Popover) */
+    .search-popover {
+      width: 236px;
+      padding: 10px 12px;
+      border-radius: 18px;
+    }
+
     .search-bar-wrap {
       position: relative;
       display: flex;
       align-items: center;
-      height: 32px;
-      width: 118px;
+      height: 36px;
+      width: 100%;
       min-width: 0;
       border-radius: 999px;
       background: var(--util-bg);
       border: 1px solid var(--util-border);
-      padding: 0 7px 0 9px;
-      gap: 5px;
-      backdrop-filter: blur(8px);
-      transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      padding: 0 8px 0 11px;
+      gap: 6px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .search-bar-wrap:focus-within,
     .search-bar-wrap.has-value {
-      width: 146px;
       border-color: var(--primary-color);
       box-shadow: 0 0 0 2px var(--primary-btn-bg);
     }
 
     .search-icon {
-      width: 13px;
-      height: 13px;
+      width: 15px;
+      height: 15px;
       flex-shrink: 0;
       color: var(--text-muted);
       transition: color 0.2s ease;
@@ -452,17 +455,18 @@
       outline: none;
       background: transparent;
       color: var(--util-text);
-      font-size: 0.74rem;
+      font-size: 16px;
       font-weight: 500;
       font-family: inherit;
       user-select: text;
       -webkit-user-select: text;
       padding: 0;
-      line-height: 1.2;
+      line-height: 1.25;
     }
 
     .search-input::placeholder {
       color: var(--text-muted);
+      font-size: 0.84rem;
       opacity: 0.85;
     }
 
@@ -470,11 +474,11 @@
       display: none;
       align-items: center;
       justify-content: center;
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
       border: none;
       border-radius: 50%;
-      background: rgba(100, 116, 139, 0.16);
+      background: rgba(100, 116, 139, 0.18);
       color: var(--util-text);
       cursor: pointer;
       padding: 0;
@@ -489,16 +493,6 @@
     .search-clear-btn:hover {
       background: var(--primary-color);
       color: #ffffff;
-    }
-
-    @media (max-width: 390px) {
-      .search-bar-wrap {
-        width: 100px;
-      }
-      .search-bar-wrap:focus-within,
-      .search-bar-wrap.has-value {
-        width: 122px;
-      }
     }
 
     /* Centered Frequency & Station Title Group */
@@ -1137,19 +1131,29 @@
               </svg>
             </button>
 
-            <!-- Minimal Search Bar -->
-            <div class="search-bar-wrap" id="searchBarWrap">
-              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <!-- Search Toggle Icon (Opens Search Popover) -->
+            <button id="searchToggleBtn" class="icon-btn-card" title="Radyo Ara" aria-label="Radyo Ara">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-              <input type="text" id="stationSearchInput" class="search-input" placeholder="Ara..." aria-label="Radyo ara" autocomplete="off" spellcheck="false">
-              <button type="button" id="clearSearchBtn" class="search-clear-btn" title="Aramayı Temizle" aria-label="Aramayı Temizle">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
+            </button>
+
+            <!-- Search Popover -->
+            <div id="searchPopover" class="popover-menu search-popover">
+              <div class="search-bar-wrap" id="searchBarWrap">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
-              </button>
+                <input type="text" id="stationSearchInput" class="search-input" placeholder="Radyo ara..." aria-label="Radyo ara" autocomplete="off" spellcheck="false">
+                <button type="button" id="clearSearchBtn" class="search-clear-btn" title="Aramayı Temizle" aria-label="Aramayı Temizle">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
             </div>
 
             <!-- Color Swatches & Hue Slider Popover -->
@@ -3733,6 +3737,8 @@
     const sunIcon = document.getElementById("sunIcon");
     const moonIcon = document.getElementById("moonIcon");
     const settingsBtn = document.getElementById("settingsBtn");
+    const searchToggleBtn = document.getElementById("searchToggleBtn");
+    const searchPopover = document.getElementById("searchPopover");
     const searchBarWrap = document.getElementById("searchBarWrap");
     const stationSearchInput = document.getElementById("stationSearchInput");
     const clearSearchBtn = document.getElementById("clearSearchBtn");
@@ -3922,15 +3928,30 @@
       });
     }
 
-    // Toggle Settings Popover
+    // Toggle Settings & Search Popovers
     settingsBtn.addEventListener("click", (e) => {
       e.stopPropagation();
+      if (searchPopover) searchPopover.classList.remove("open");
       colorPopover.classList.toggle("open");
     });
+
+    if (searchToggleBtn && searchPopover) {
+      searchToggleBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        colorPopover.classList.remove("open");
+        const isOpen = searchPopover.classList.toggle("open");
+        if (isOpen && stationSearchInput) {
+          stationSearchInput.focus();
+        }
+      });
+    }
 
     document.addEventListener("click", (e) => {
       if (!colorPopover.contains(e.target) && e.target !== settingsBtn) {
         colorPopover.classList.remove("open");
+      }
+      if (searchPopover && !searchPopover.contains(e.target) && !searchToggleBtn.contains(e.target)) {
+        searchPopover.classList.remove("open");
       }
     });
 
@@ -3958,8 +3979,13 @@
         cancelAddModalBtn.textContent = currentCountryMode === "TR" ? "İptal" : "Cancel";
       }
       if (stationSearchInput) {
-        stationSearchInput.placeholder = currentCountryMode === "TR" ? "Ara..." : "Search...";
+        stationSearchInput.placeholder = currentCountryMode === "TR" ? "Radyo ara..." : "Search stations...";
         stationSearchInput.setAttribute("aria-label", currentCountryMode === "TR" ? "Radyo ara" : "Search radio stations");
+      }
+      if (searchToggleBtn) {
+        const searchBtnLabel = currentCountryMode === "TR" ? "Radyo Ara" : "Search Stations";
+        searchToggleBtn.title = searchBtnLabel;
+        searchToggleBtn.setAttribute("aria-label", searchBtnLabel);
       }
       if (clearSearchBtn) {
         const clearLabel = currentCountryMode === "TR" ? "Aramayı Temizle" : "Clear Search";
@@ -4111,8 +4137,12 @@
 
     function setStationSearch(val) {
       searchQuery = val || "";
+      const hasVal = searchQuery.trim().length > 0;
       if (searchBarWrap) {
-        searchBarWrap.classList.toggle("has-value", searchQuery.trim().length > 0);
+        searchBarWrap.classList.toggle("has-value", hasVal);
+      }
+      if (searchToggleBtn) {
+        searchToggleBtn.classList.toggle("active", hasVal);
       }
       renderPlaylist();
     }
@@ -4135,6 +4165,11 @@
           if (stationSearchInput.value) {
             clearStationSearch(false);
           }
+          if (searchPopover) searchPopover.classList.remove("open");
+          stationSearchInput.blur();
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          if (searchPopover) searchPopover.classList.remove("open");
           stationSearchInput.blur();
         }
       });
@@ -4720,6 +4755,8 @@
         case "Slash":
           if (stationSearchInput) {
             e.preventDefault();
+            if (colorPopover) colorPopover.classList.remove("open");
+            if (searchPopover) searchPopover.classList.add("open");
             stationSearchInput.focus();
             stationSearchInput.select();
           }
