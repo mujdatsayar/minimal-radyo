@@ -4542,11 +4542,33 @@
         : "⚠️ Could not connect to audio stream.", 3000);
     }
 
+    function isAppleMobileDevice() {
+      return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    }
+
+    if (!isAppleMobileDevice()) {
+      loadHlsLibrary().catch(() => {});
+    }
+
     function startAudioPlayback(url, stationId) {
-      if (isHlsUrl(url) && !audio.canPlayType("application/vnd.apple.mpegurl")) {
-        loadHlsLibrary().then((Hls) => {
+      const useNativeAppleHls = isAppleMobileDevice() && !!audio.canPlayType("application/vnd.apple.mpegurl");
+      if (isHlsUrl(url) && !useNativeAppleHls) {
+        const runHls = (Hls) => {
           if (currentIndex !== stationId) return;
           if (!Hls || !Hls.isSupported()) {
+            if (audio.canPlayType("application/vnd.apple.mpegurl")) {
+              if (audio.src !== url) audio.src = url;
+              const fallbackPlay = audio.play();
+              if (fallbackPlay !== undefined) {
+                fallbackPlay.then(() => {
+                  isPlaying = true;
+                  updatePlayPauseIcon();
+                  renderPlaylist();
+                  scrollActiveStationIntoView();
+                }).catch(() => notifyStreamError());
+              }
+              return;
+            }
             notifyStreamError();
             return;
           }
@@ -4576,10 +4598,16 @@
               notifyStreamError();
             }
           });
-        }).catch(err => {
-          console.warn("HLS script error:", err);
-          notifyStreamError();
-        });
+        };
+
+        if (window.Hls) {
+          runHls(window.Hls);
+        } else {
+          loadHlsLibrary().then(runHls).catch(err => {
+            console.warn("HLS script error:", err);
+            notifyStreamError();
+          });
+        }
         return;
       }
 
