@@ -82,7 +82,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       padding: 24px 16px;
       transition: background-color 0.3s ease;
       color: var(--text-dark);
@@ -94,6 +94,7 @@
       width: 100%;
       max-width: 392px;
       min-width: 0;
+      margin: auto 0;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -228,29 +229,47 @@
       body {
         padding: calc(env(safe-area-inset-top, 0px) + 8px) calc(env(safe-area-inset-right, 0px) + 12px) calc(env(safe-area-inset-bottom, 0px) + 8px) calc(env(safe-area-inset-left, 0px) + 12px);
       }
-      .app-wrapper.layout-horizontal {
+      .app-wrapper {
+        flex: 1 1 0%;
+        min-height: 0;
+        height: 100%;
+        max-height: 100%;
+        max-width: 840px;
+        flex-direction: row;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .app-wrapper .player-card,
+      .app-wrapper.layout-horizontal .player-card {
+        width: 320px;
+        flex: 0 0 320px;
         height: 100%;
         max-height: 100%;
       }
-      .app-wrapper.layout-horizontal .player-card,
+      .app-wrapper .playlist-card,
       .app-wrapper.layout-horizontal .playlist-card {
+        flex: 1;
+        min-width: 0;
         height: 100%;
         max-height: 100%;
       }
+      .app-wrapper .player-upper,
       .app-wrapper.layout-horizontal .player-upper {
         min-height: 0;
+        flex: 1;
         padding: 12px 16px 10px;
       }
+      .app-wrapper .player-lower,
       .app-wrapper.layout-horizontal .player-lower {
         padding: 10px 14px 12px;
         gap: 8px;
       }
-      .app-wrapper.layout-horizontal .btn-prev,
-      .app-wrapper.layout-horizontal .btn-next {
+      .app-wrapper .btn-prev,
+      .app-wrapper .btn-next {
         width: 48px;
         height: 48px;
       }
-      .app-wrapper.layout-horizontal .btn-play-pause {
+      .app-wrapper .btn-play-pause {
         height: 48px;
       }
     }
